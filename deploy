@@ -3,7 +3,7 @@
 rm -rf .aws-sam
 rm -rf lib/python
 mkdir -p lib/python
-cp -r Azure lib/python
+cp -r Google lib/python
 sam build
 cd .aws-sam/build
 aws cloudformation package \
