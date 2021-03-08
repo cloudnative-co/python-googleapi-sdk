@@ -8,6 +8,10 @@ class Client(Base):
     __users: Users = None
 
     @property
+    def version(self):
+        return 1
+
+    @property
     def messages(self):
         if self.__messages is None:
             self.__messages = Messages(client=self)

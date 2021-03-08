@@ -1,7 +1,10 @@
-import json
+import base64
 import datetime
-import inspect
 import importlib
+import inspect
+import io
+import json
+import re
 
 
 def normalization(args):
@@ -12,11 +15,19 @@ def normalization(args):
         if value is None:
             value = "null"
         elif isinstance(value, str):
+            value = value.replace('"', '\\"')
             value = '"{}"'.format(value)
         elif isinstance(value, datetime.datetime):
             value = value.timestamp()
+        elif isinstance(args[ky], dict):
+            value = json.dumps(value)
         elif isinstance(args[ky], list):
-            value = ",".join(value)
+            value = json.dumps(value)
+        elif isinstance(value, bool):
+            value = "true" if value else "false"
+        elif isinstance(value, bytes):
+            value = base64.b64encode(value)
+            value = '"{}"'.format(value)
         result[ky] = value
     return result
 
@@ -48,14 +59,14 @@ def remove_none(params: dict):
 
 
 def request_parameter(args: dict):
-    map_path = args["self"].__module__.split(".")[:2]
+    map_path = args["self"].__module__.split(".")[:3]
     map_path.append("maps")
     map_path = ".".join(map_path)
     mdl_map = importlib.import_module(map_path)
     parameter_maps = mdl_map.Maps
 
     m_name = args["self"].__module__
-    c_name = "{}.{}".format(m_name, args["self"].__class__.__name__)
+    c_name = args["self"].__class__.__name__
     m_name = inspect.stack()[1].function
     if c_name not in parameter_maps:
         return None
@@ -80,12 +91,31 @@ def request_parameter(args: dict):
     if "query" in req_map:
         query = parameter_maps[c_name][m_name]["query"]
         query = query.format(**params)
-        query = json.loads(query)
+        try:
+            query = json.loads(query, strict=False)
+        except json.decoder.JSONDecodeError as e:
+            start = e.pos - 10
+            start = 0 if start <= 0 else start
+            end = e.pos + 10
+            end = len(query) if len(query) >= end else end
+            print(query)
+            print(query[start:end])
+            raise e
         query = remove_none(query)
     if "payload" in req_map:
         payload = parameter_maps[c_name][m_name]["payload"]
         payload = payload.format(**params)
-        payload = json.loads(payload)
+        print(payload)
+        try:
+            payload = json.loads(payload, strict=False)
+        except json.decoder.JSONDecodeError as e:
+            start = e.pos - 10
+            start = 0 if start <= 0 else start
+            end = e.pos + 10
+            end = len(payload) if len(payload) >= end else end
+            print(payload)
+            print(payload[start:end])
+            raise e
         payload = remove_none(payload)
     result = {
         "method": method,
