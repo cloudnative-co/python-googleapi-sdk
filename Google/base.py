@@ -179,6 +179,45 @@ class Base(object):
         except urllib.error.HTTPError as e:
             raise e
 
+    def encode_multipart(
+        self, payload: dict = None, files: dict = None, charset="utf-8"
+    ):
+        boundary = '----------lImIt_of_THE_fwIle_eW_$'
+        bf = io.BytesIO()
+        if payload is not None:
+            for key, value in payload.items():
+                bf.write(('--%s\r\n' % boundary).encode(charset))
+                bf.write((
+                    'Content-Disposition: form-data; name="%s"' % key
+                ).encode(charset))
+                bf.write(b'\r\n\r\n')
+                if isinstance(value, dict):
+                    value = json.dumps(value)
+                if isinstance(value, str):
+                    value = value.encode(charset)
+                bf.write(value)
+                bf.write(b'\r\n')
+        if files is not None:
+            cdisp = 'Content-Disposition: form-data; '\
+                    'name="%s"; filename="%s"\r\n'
+            for key, value in files.items():
+                filename = value["name"]
+                bf.write(('--%s\r\n' % boundary).encode(charset))
+                bf.write((cdisp % (key, filename)).encode(charset))
+                type = mimetypes.guess_type(filename)[0]
+                type = type or 'application/octet-stream'
+                bf.write(("Content-Type: {}\r\n".format(type)).encode(charset))
+                content = value["content"]
+                if hasattr(content, "read"):
+                    content = content.read()
+                bf.write(b'\r\n')
+                bf.write(content)
+                bf.write(b'\r\n')
+        bf.write(('--' + boundary + '--\r\n\r\n').encode(charset))
+        bf = bf.getvalue()
+        content_type = 'multipart/form-data; boundary=%s' % boundary
+        return content_type, bf
+
     def http_request(
         self,
         method: str, path: str = None, headers: dict = {},
@@ -234,6 +273,7 @@ class Base(object):
         else:
             payload = b""
         args["headers"] = dict(self.__header, **headers)
+        print(args["headers"])
         req = urllib.request.Request(**args)
         try:
             with self.__client.open(req) as res:
@@ -274,3 +314,11 @@ class Base(object):
             urllib.request.HTTPCookieProcessor(self.__cookie)
         )
         urllib.request.install_opener(self.__client)
+
+    @property
+    def private_key(self):
+        return self.__private_key
+
+    @property
+    def client_email(self):
+        return self.__client_email

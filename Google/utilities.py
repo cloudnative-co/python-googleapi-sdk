@@ -85,9 +85,14 @@ def request_parameter(args: dict):
     method = req_map["method"]
     url = req_map["url"]
     url = url.format(**args)
-    params = normalization(args)
     query = None
     payload = None
+    files = None
+
+    if "files" in args:
+        files = args.pop("files")
+    params = normalization(args)
+
     if "query" in req_map:
         query = parameter_maps[c_name][m_name]["query"]
         query = query.format(**params)
@@ -98,14 +103,11 @@ def request_parameter(args: dict):
             start = 0 if start <= 0 else start
             end = e.pos + 10
             end = len(query) if len(query) >= end else end
-            print(query)
-            print(query[start:end])
             raise e
         query = remove_none(query)
     if "payload" in req_map:
         payload = parameter_maps[c_name][m_name]["payload"]
         payload = payload.format(**params)
-        print(payload)
         try:
             payload = json.loads(payload, strict=False)
         except json.decoder.JSONDecodeError as e:
@@ -113,8 +115,6 @@ def request_parameter(args: dict):
             start = 0 if start <= 0 else start
             end = e.pos + 10
             end = len(payload) if len(payload) >= end else end
-            print(payload)
-            print(payload[start:end])
             raise e
         payload = remove_none(payload)
     result = {
@@ -122,7 +122,9 @@ def request_parameter(args: dict):
         "url": url,
         "query": query,
         "payload": payload,
+        "files": files,
         "auth_method": auth_method,
         "auth_params": auth_params
     }
     return result
+

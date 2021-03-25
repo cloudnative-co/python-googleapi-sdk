@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="GoogleAPI",
-    version="0.2.0",
+    version="0.2.1",
     description="GoogleAPI for Python 3.6",
     author="sebastian",
     author_email="seba@cloudnative.co.jp",
