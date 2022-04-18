@@ -2,7 +2,7 @@ Maps = {
     "Buckets": {
         "delete": {
             "method": "DELETE",
-            "url": "https://storage.googleapis.com/storage/v1/b/{bucket}",
+            "url": "https://storage.googleapis.com/storage/v1/b/{bucket}/o/{name}",
             "auth_method": "gsuite_autholization",
             "auth_params": {
                 "scopes": [
@@ -13,8 +13,7 @@ Maps = {
             },
             "query": """{{
                 "ifMetagenerationMatch": {if_metageneration_match},
-                "ifMetagenerationNotMatch": {if_metageneration_not_match},
-                "projection": {projection}
+                "ifMetagenerationNotMatch": {if_metageneration_not_match}
             }}"""
         },
         "get": {
@@ -105,6 +104,44 @@ Maps = {
         }
     },
     "Objects": {
+        "delete": {
+            "method": "DELETE",
+            "url": "https://storage.googleapis.com/storage/v1/b/{bucket}/o/{name}",
+            "auth_method": "gsuite_autholization",
+            "auth_params": {
+                "scopes": [
+                    "https://www.googleapis.com/auth/devstorage.full_control",
+                    "https://www.googleapis.com/auth/devstorage.read_write",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                ]
+            },
+            "query": """{{
+                "generation": {generation},
+                "ifGenerationMatch": {if_generation_match},
+                "ifGenerationNotMatch": {if_generation_not_match},
+                "ifMetagenerationMatch": {if_metageneration_match},
+                "ifMetagenerationNotMatch": {if_metageneration_not_match}
+            }}"""
+        },
+        "get": {
+            "method": "GET",
+            "url": "https://storage.googleapis.com/storage/v1/b/{bucket}/o/{name}",
+            "auth_method": "gsuite_autholization",
+            "auth_params": {
+                "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                ]
+            },
+            "query": """{{
+                "alt": {alt},
+                "generation": {generation},
+                "ifGenerationMatch": {if_generation_match},
+                "ifGenerationNotMatch": {if_generation_not_match},
+                "ifMetagenerationMatch": {if_metageneration_match},
+                "ifMetagenerationNotMatch": {if_metageneration_not_match},
+                "projection": {projection}
+            }}"""
+        },
         "insert": {
             "method": "POST",
             "url": "https://storage.googleapis.com/upload/storage/v1/b/{bucket}/o",
@@ -141,6 +178,27 @@ Maps = {
                 "name": {name},
                 "storageClass": {storage_class},
                 "temporaryHold": {temporary_hold}
+            }}"""
+        },
+        "list": {
+            "method": "GET",
+            "url": "https://storage.googleapis.com/storage/v1/b",
+            "auth_method": "gsuite_autholization",
+            "auth_params": {
+                "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                ]
+            },
+            "query": """{{
+                "delimiter": {delimiter},
+                "endOffset": {end_offset},
+                "includeTrailingDelimiter": {include_trailing_delimiter},
+                "maxResult": {max_result},
+                "pageToken": {page_token},
+                "prefix": {prefix},
+                "projection": {projection},
+                "startOffset": {start_offset},
+                "versions": {versions}
             }}"""
         }
     }

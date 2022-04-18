@@ -110,6 +110,7 @@ class Base(object):
             'exp': exp,
             "iat": iat,
         }
+        print(payload)
         if self.__username is not None:
             payload["sub"] = self.__username
         payload = json.dumps(payload, separators=(",", ":")).encode('utf-8')
@@ -273,7 +274,6 @@ class Base(object):
         else:
             payload = b""
         args["headers"] = dict(self.__header, **headers)
-        print(args["headers"])
         req = urllib.request.Request(**args)
         try:
             with self.__client.open(req) as res:
