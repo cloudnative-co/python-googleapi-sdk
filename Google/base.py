@@ -2,6 +2,7 @@
 # import module snippets
 import base64
 import cryptography
+import cryptography.hazmat.backends
 import cryptography.hazmat.primitives.serialization
 import datetime
 import http.cookiejar
@@ -110,7 +111,6 @@ class Base(object):
             'exp': exp,
             "iat": iat,
         }
-        print(payload)
         if self.__username is not None:
             payload["sub"] = self.__username
         payload = json.dumps(payload, separators=(",", ":")).encode('utf-8')
