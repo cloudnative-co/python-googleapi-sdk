@@ -59,9 +59,10 @@ def remove_none(params: dict):
 
 
 def request_parameter(args: dict):
-    map_path = args["self"].__module__.split(".")[:3]
+    map_path = args["self"].__module__.split(".")[:-1]
     map_path.append("maps")
     map_path = ".".join(map_path)
+
     mdl_map = importlib.import_module(map_path)
     parameter_maps = mdl_map.Maps
 
