@@ -245,5 +245,17 @@ Maps = {
                 "viewType": {view_type}
             }}"""
         }
+    },
+    "Tokens": {
+        "list": {
+            "method": "GET",
+            "url": "https://admin.googleapis.com/admin/directory/v1/users/{user_key}/tokens",
+            "auth_method": "gsuite_autholization",
+            "auth_params": {
+                "scopes": [
+                    "https://www.googleapis.com/auth/admin.directory.user.security"
+                ]
+            }
+        }
     }
 }
