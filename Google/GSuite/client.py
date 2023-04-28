@@ -3,6 +3,7 @@
 from ..base import Base
 from .Calendar import Client as Calendar
 from .Directory import Client as Directory
+from .Drive import Client as Drive
 from .Gmail import Client as Gmail
 from .Reports import Client as Reports
 from .Sheets import Client as Sheets
@@ -11,6 +12,7 @@ from .Sheets import Client as Sheets
 class Client(Base):
     __calendar: Calendar = None
     __directory: Directory = None
+    __drive: Drive = None
     __gmail: Gmail = None
     __reports: Reports = None
     __sheets: Sheets = None
@@ -26,6 +28,12 @@ class Client(Base):
         if self.__directory is None:
             self.__directory = Directory(client=self)
         return self.__directory
+
+    @property
+    def drive(self):
+        if self.__drive is None:
+            self.__drive = Drive(client=self)
+        return self.__drive
 
     @property
     def gmail(self):
